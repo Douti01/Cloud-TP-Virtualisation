@@ -13,61 +13,64 @@
 
 ### Commandes 1 :  de verification de l'hyperviseur 
 '''Powershell
-bcdedit /enum | findstr hypervisorlaunchtype
-systeminfo | findstr /C:"Hyper-V"
+
+		bcdedit /enum | findstr hypervisorlaunchtype
+		systeminfo | findstr /C:"Hyper-V"
 '''
 ### Sorties de la commande 1
 '''Powershell
->>
-hypervisorlaunchtype    Auto
-Configuration requise pour Hyper-V:         Un hyperviseur a ?t? d?tect?. Les fonctionnalit?s n?cessaires ? Hyper-V ne seront pas affich?es.
+
+		>>
+		hypervisorlaunchtype    Auto
+		Configuration requise pour Hyper-V:         Un hyperviseur a ?t? d?tect?. Les fonctionnalit?s n?cessaires ? Hyper-V ne seront pas affich?es.
 '''
 ### Commande 2 :  de verification de l'installation de virtual box .
 ''' Powershell
-$env:Path += ";C:\Program Files\Oracle\VirtualBox"
-VBoxManage --version
-VBoxManage list hostinfo
+
+		$env:Path += ";C:\Program Files\Oracle\VirtualBox"
+		VBoxManage --version
+		VBoxManage list hostinfo
 '''
 ### Sorties de la commande 2 
-'''Powershell
+'''
 
->>
-7.2.20r175154
-Host Information:
-
-Host time: 2026-10-13T16:00:05.188000000Z
-Processor online count: 8
-Processor count: 8
-Processor online core count: 4
-Processor core count: 4
-Processor supports HW virtualization: yes
-Processor supports PAE: yes
-Processor supports long mode: yes
-Processor supports nested paging: yes
-Processor supports unrestricted guest: no
-Processor supports nested HW virtualization: no
-Processor supports virt. vmsave/vmload: no
-Processor#0 speed: unknown
-Processor#0 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
-Processor#1 speed: unknown
-Processor#1 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
-Processor#2 speed: unknown
-Processor#2 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
-Processor#3 speed: unknown
-Processor#3 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
-Processor#4 speed: unknown
-Processor#4 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
-Processor#5 speed: unknown
-Processor#5 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
-Processor#6 speed: unknown
-Processor#6 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
-Processor#7 speed: unknown
-Processor#7 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
-Memory size: 16227 MByte
-Memory available: 5721 MByte
-Operating system: Windows 11
-Operating system version: 10.0.26200.9168
-PS C:\WINDOWS\system32>
+		>>
+		7.2.20r175154
+		Host Information:
+		
+		Host time: 2026-10-13T16:00:05.188000000Z
+		Processor online count: 8
+		Processor count: 8
+		Processor online core count: 4
+		Processor core count: 4
+		Processor supports HW virtualization: yes
+		Processor supports PAE: yes
+		Processor supports long mode: yes
+		Processor supports nested paging: yes
+		Processor supports unrestricted guest: no
+		Processor supports nested HW virtualization: no
+		Processor supports virt. vmsave/vmload: no
+		Processor#0 speed: unknown
+		Processor#0 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
+		Processor#1 speed: unknown
+		Processor#1 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
+		Processor#2 speed: unknown
+		Processor#2 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
+		Processor#3 speed: unknown
+		Processor#3 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
+		Processor#4 speed: unknown
+		Processor#4 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
+		Processor#5 speed: unknown
+		Processor#5 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
+		Processor#6 speed: unknown
+		Processor#6 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
+		Processor#7 speed: unknown
+		Processor#7 description: Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
+		Memory size: 16227 MByte
+		Memory available: 5721 MByte
+		Operating system: Windows 11
+		Operating system version: 10.0.26200.9168
+		PS C:\WINDOWS\system32>
 
 '''
 ### Reponse aux questions 
@@ -105,9 +108,10 @@ PS C:\WINDOWS\system32>
 
 ### commandes 1 : Calcul 
 '''Powershell 
-  cd $HOME\Downloads
-Get-FileHash .\ubuntu-26.04-live-server-amd64.iso -Algorithm SHA256
-Select-String -Path .\SHA256SUMS -Pattern "live-server-amd64"
+
+		cd $HOME\Downloads
+		Get-FileHash .\ubuntu-26.04-live-server-amd64.iso -Algorithm SHA256
+		Select-String -Path .\SHA256SUMS -Pattern "live-server-amd64"
 '''
 ### Sorties commande 1 
 
