@@ -544,10 +544,119 @@ hdfs dfs -cat /user/hadoop/tp/output_ventes/part-00000
 '''
 
 
+## Exercice 4 — Température maximale par année 
 
 
+**Etape 1 : Creation du fichier de données ~/tp/meteo.txt**
 
+''' Terminal 
 
+    cat > ~/tp/meteo.txt << 'EOF'
+    2024,ABJ,31.2
+    2024,BKE,33.5
+    2025,ABJ,32.8
+    2025,KHG,36.1
+    2024,KHG,35.0
+    2025,BKE,30.9
+    EOF
+    
+'''
+
+**Etape 2 : Creation du Mapper (~/tp/mapper_meteo.py)**
+
+Il extrait l'année et la température sur chaque ligne et les affiche séparées par une tabulation (annee<TAB>temperature) :
+''' Terminal
+
+    cat > ~/tp/mapper_meteo.py << 'EOF'
+    #!/usr/bin/env python3
+    """mapper_meteo.py : émet (annee, temperature) pour chaque relevé météo."""
+    import sys
+    
+    for ligne in sys.stdin:
+        ligne = ligne.strip()
+        if not ligne:
+            continue
+        champs = ligne.split(",")
+        if len(champs) != 3:
+            continue
+        annee, _, temp = champs
+        try:
+            temp_val = float(temp)
+            print(f"{annee}\t{temp_val}")
+        except ValueError:
+            continue
+    EOF
+
+'''
+**Etape 3 : Créer le Reducer (~/tp/reducer_meteo.py)**
+
+Comme Hadoop trie les paires par année, le reducer compare les températures d'une même année et ne garde que le maximum :
+''' Terminal
+
+    cat > ~/tp/reducer_meteo.py << 'EOF'
+    #!/usr/bin/env python3
+    """reducer_meteo.py : conserve la température maximale pour chaque année."""
+    import sys
+    
+    annee_courante = None
+    temp_max = None
+    
+    for ligne in sys.stdin:
+        annee, temp = ligne.rstrip("\n").split("\t")
+        temp = float(temp)
+        if annee == annee_courante:
+            if temp > temp_max:
+                temp_max = temp
+        else:
+            if annee_courante is not None:
+                print(f"{annee_courante}\t{temp_max}")
+            annee_courante = annee
+            temp_max = temp
+    
+    if annee_courante is not None:
+        print(f"{annee_courante}\t{temp_max}")
+    EOF
+    
+'''
+**Etape 4 : Tester en local (sans Hadoop)**
+
+''' Terminal
+
+    chmod +x ~/tp/mapper_meteo.py ~/tp/reducer_meteo.py
+    cat ~/tp/meteo.txt | ~/tp/mapper_meteo.py | sort | ~/tp/reducer_meteo.py
+    
+'''
+
+''' sortie 
+
+<img width="685" height="104" alt="image" src="https://github.com/user-attachments/assets/58c6acab-4d3b-4253-bd51-7cf7d12021ad" />
+
+'''
+**Etape 5 : Exécuter sur Hadoop et lire le résultat**
+1-Envoyer meteo.txt dans HDFS 
+
+''' Terminal
+
+    hdfs dfs -mkdir -p /user/hadoop/tp/meteo
+    hdfs dfs -put ~/tp/meteo.txt /user/hadoop/tp/meteo/
+'''
+
+'''sortie
+
+'''
+
+2.Lancer le job MapReduce 
+
+''' Terminal
+
+    hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-3.3.6.jar \
+      -files mapper_meteo.py,reducer_meteo.py \
+      -mapper "python3 mapper_meteo.py" \
+      -reducer "python3 reducer_meteo.py" \
+      -input /user/hadoop/tp/meteo \
+      -output /user/hadoop/tp/output_meteo
+    
+'''
 
 
 
