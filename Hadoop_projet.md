@@ -293,5 +293,264 @@ jps                            # liste les processus Java actifs
 • Nombre de blocs (avec 1 Go = 1024 Mo) :
 (1024MO/128MO) =8bloc
 • Espace disque utilisé : Votre résultat (1G0*3 = 3 GO  et 24 blocs physiques au total) 
+ 
+# Partie 5 — Pratique : MapReduce en Python 
+
+## 5.2 Exercice 2 — WordCount en Python 
+
+**Etape1:creation de fichier mapper.py**
+
+''' terminal
+
+    cat > ~/tp/mapper.py << 'EOF'
+    #!/usr/bin/env python3
+    """mapper.py : émet (mot, 1) pour chaque mot lu sur l'entrée standard."""
+    import sys
+    import re
+    
+    for ligne in sys.stdin:
+        ligne = ligne.strip().lower()
+        # on ne garde que les lettres (accents compris)
+        mots = re.findall(r"[a-zàâäéèêëîïôöùûüç]+", ligne)
+        for mot in mots:
+            print(f"{mot}\t1")
+    EOF
+'''
+
+**Etape2:Creation de fichier**
+
+''' Terminal
+
+        cat > ~/tp/reducer.py << 'EOF'
+        #!/usr/bin/env python3
+        """reducer.py : additionne les compteurs de chaque mot.
+        Les lignes arrivent triées par clé : les mêmes mots sont consécutifs."""
+        import sys
+        
+        mot_courant = None
+        total = 0
+        
+        for ligne in sys.stdin:
+            mot, valeur = ligne.rstrip("\n").split("\t", 1)
+            try:
+                valeur = int(valeur)
+            except ValueError:
+                continue  # ligne mal formée : on l'ignore
+        
+            if mot == mot_courant:
+                total += valeur
+            else:
+                if mot_courant is not None:
+                    print(f"{mot_courant}\t{total}")
+                mot_courant = mot
+                total = valeur
+        
+        # ne pas oublier le dernier mot !
+        if mot_courant is not None:
+            print(f"{mot_courant}\t{total}")
+        EOF
+
+'''
+
+**Etape3:tester en local (sans hadoop)**
+
+''' Terminal
+
+    chmod +x mapper.py reducer.py
+    cat poeme.txt | ./mapper.py | sort | ./reducer.py
+    
+'''
+
+''' sortie
+
+<img width="871" height="363" alt="image" src="https://github.com/user-attachments/assets/93472e7a-24db-467b-b163-d9451b176416" />
+
+'''
+
+**Etape 4 : Exécution sur Hadoop**
+
+''' Terminal 
+
+    hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-3.3.6.jar \
+      -files mapper.py,reducer.py \
+      -mapper "python3 mapper.py" \
+      -reducer "python3 reducer.py" \
+      -input /user/hadoop/tp/input \
+      -output /user/hadoop/tp/output_wordcount
+    
+    # Lire le résultat
+    hdfs dfs -cat /user/hadoop/tp/output_wordcount/part-00000
+
+'''
+''' sortie 
+
+    <img width="948" height="457" alt="image" src="https://github.com/user-attachments/assets/fd924d5d-f087-4e60-ba58-373976f50007" />
+    
+    <img width="952" height="465" alt="image" src="https://github.com/user-attachments/assets/e0c3fcfd-5798-4708-97fe-9912f78d01ae" />
+
+    <img width="952" height="469" alt="image" src="https://github.com/user-attachments/assets/e2879156-d320-46e1-94a7-6a3eb9a2f45b" />
+
+    <img width="920" height="238" alt="image" src="https://github.com/user-attachments/assets/dd7edd3f-f98d-4557-b98c-85c652cb029e" />
+
+'''
+
+**Etape 5 : Test sur un vrai texte**
+
+
+''' Terminal 
+
+    wget -O ~/tp/miserables.txt https://gutenberg.org
+    hdfs dfs -mkdir -p /user/hadoop/tp/livre
+    hdfs dfs -put ~/tp/miserables.txt /user/hadoop/tp/livre/
+    
+    hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-3.3.6.jar \
+      -files mapper.py,reducer.py \
+      -mapper "python3 mapper.py" \
+      -combiner "python3 reducer.py" \
+      -reducer "python3 reducer.py" \
+      -input /user/hadoop/tp/livre \
+      -output /user/hadoop/tp/output_livre
+    
+    # Afficher les 20 mots les plus fréquents
+    hdfs dfs -cat /user/hadoop/tp/output_livre/part-* | sort -k2 -nr | head -20
+
+'''
+
+''' sortie 
+
+'''
+
+
+## Exercice 3 — Chiffre d'affaires par ville
+
+**Creation du fichier CSV**
+
+''' Terminal 
+
+cat > ~/tp/ventes.csv << 'EOF'
+date,ville,produit,quantite,prix_unitaire
+2026-01-03,Abidjan,Ordinateur,2,350000
+2026-01-03,Bouake,Imprimante,1,95000
+2026-01-04,Abidjan,Souris,10,5000
+2026-01-05,Yamoussoukro,Ordinateur,1,350000
+2026-01-05,San-Pedro,Ecran,3,80000
+2026-01-06,Bouake,Ordinateur,1,350000
+2026-01-06,Abidjan,Ecran,2,80000
+2026-01-07,Korhogo,Clavier,5,8000
+2026-01-07,San-Pedro,Souris,4,5000
+2026-01-08,Yamoussoukro,Imprimante,2,95000
+EOF
+
+
+''''
+**Creation de mapper_ventes.py**
+
+''' Terminal
+
+    cat > ~/tp/mapper_ventes.py << 'EOF'
+    #!/usr/bin/env python3
+    """mapper_ventes.py : émet (ville, montant) pour chaque vente."""
+    import sys
+    
+    for ligne in sys.stdin:
+        ligne = ligne.strip()
+        if not ligne or ligne.startswith("date"):
+            continue
+        champs = ligne.split(",")
+        if len(champs) != 5:
+            continue
+        _, ville, _, quantite, prix = champs
+        try:
+            montant = int(quantite) * float(prix)
+        except ValueError:
+            continue
+        print(f"{ville}\t{montant}")
+    EOF
+'''
+**Creation de reducer_ventes.py**
+
+''' Terminal
+
+    cat > ~/tp/reducer_ventes.py << 'EOF'
+    #!/usr/bin/env python3
+    """reducer_ventes.py : total et nombre de ventes par ville."""
+    import sys
+    
+    ville_courante, total, nb = None, 0.0, 0
+    
+    def emettre(ville, total, nb):
+        print(f"{ville}\t{total:.0f}\t{nb}")
+    
+    for ligne in sys.stdin:
+        ville, montant = ligne.rstrip("\n").split("\t")
+        montant = float(montant)
+        if ville == ville_courante:
+            total += montant
+            nb += 1
+        else:
+            if ville_courante is not None:
+                emettre(ville_courante, total, nb)
+            ville_courante, total, nb = ville, montant, 1
+    
+    if ville_courante is not None:
+        emettre(ville_courante, total, nb)
+    EOF
+    
+'''
+
+**Rendre exécutables et envoyer sur HDFS**
+
+''' Terminal
+
+    chmod +x ~/tp/mapper_ventes.py ~/tp/reducer_ventes.py
+    hdfs dfs -mkdir -p /user/hadoop/tp/ventes
+    hdfs dfs -put ~/tp/ventes.csv /user/hadoop/tp/ventes/
+
+'''
+
+**Exécuter le job Hadoop et lire le résultat **
+
+''' Terminal
+
+    hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-3.3.6.jar \
+      -files mapper_ventes.py,reducer_ventes.py \
+      -mapper "python3 mapper_ventes.py" \
+      -reducer "python3 reducer_ventes.py" \
+      -input /user/hadoop/tp/ventes \
+      -output /user/hadoop/tp/output_ventes
+        
+'''
+
+''' sortie 
+
+<img width="1133" height="687" alt="image" src="https://github.com/user-attachments/assets/a05e9d52-e174-431b-b861-e0931ca915f3" />
+
+<img width="1127" height="685" alt="image" src="https://github.com/user-attachments/assets/8b8383db-3d77-40d7-99db-f5b97e0dd926" />
+
+<img width="1062" height="192" alt="image" src="https://github.com/user-attachments/assets/239b339c-6b3a-485b-b102-b5ce0323b0e0" />
+
+'''
+
+''' Terminal
+
+hdfs dfs -cat /user/hadoop/tp/output_ventes/part-00000
+    
+'''
+
+''' sortie
+
+<img width="879" height="214" alt="image" src="https://github.com/user-attachments/assets/f7cb984c-6f3a-4d6b-8983-4ef1e193d19e" />
+
+'''
+
+
+
+
+
+
+
+
+
+
 
 
