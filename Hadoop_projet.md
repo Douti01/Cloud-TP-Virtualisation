@@ -1,4 +1,6 @@
 
+
+
 # Partie 1 — Installation d'Hadoop en mode pseudo-distribué 
 
 ## 2.1 Mise à jour du système et installation de Java 
