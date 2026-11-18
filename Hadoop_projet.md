@@ -1,9 +1,17 @@
 
 
+# TP HADOOP SOUS UBUNTU : CLUSTER,HDFS ,YARN,MapReduce et programmation en python 
 
-# Partie 1 — Installation d'Hadoop en mode pseudo-distribué 
+**Etudiants :** SANOGO DOUTI AMADADOU
 
-## 2.1 Mise à jour du système et installation de Java 
+**Encadreurs :** Dr BAKAYOKO 
+
+**Université :** Université Felix Houphouêt Boigny-L3-Mathematique-Informatique, parcours BDGL
+
+
+## Partie 1 — Installation d'Hadoop en mode pseudo-distribué 
+
+### 2.1 Mise à jour du système et installation de Java 
 **commande**
 
 '''terminal
@@ -23,7 +31,7 @@
   
   <img width="907" height="292" alt="image" src="https://github.com/user-attachments/assets/8dede4ca-c3e3-4205-91e7-e9b303e1556f" />
 
-## 2.2 Création d'un utilisateur dédié 
+### 2.2 Création d'un utilisateur dédié 
 
 **commmande**
 
@@ -40,7 +48,7 @@
 
 <img width="1267" height="647" alt="image" src="https://github.com/user-attachments/assets/5910d976-b0e0-4fd8-a94d-d144c9c7e2d9" />
 
-## 2.3 Configuration de SSH sans mot de passe 
+### 2.3 Configuration de SSH sans mot de passe 
 
 **commande**
 
@@ -61,7 +69,7 @@
 <img width="1076" height="654" alt="Capture d&#39;écran 2026-11-11 232110" src="https://github.com/user-attachments/assets/79d4606f-d398-431b-9696-fe3acfc56ceb" />
 
 
-## 2.4 Téléchargement et installation d'Hadoop 
+### 2.4 Téléchargement et installation d'Hadoop 
 
 **commande**
 
@@ -110,7 +118,7 @@
 <img width="1020" height="236" alt="image" src="https://github.com/user-attachments/assets/9bcf26af-c135-474d-8082-65d7af377182" />
 
 
-## 2.6 Fichiers de configuration 
+### 2.6 Fichiers de configuration 
 
 **commande**
 a)  hadoop-env.sh 
@@ -214,7 +222,7 @@ e) yarn-site.xml — gestionnaire de ressources
 
 '''
 
-## 2.7 Formatage de HDFS et démarrage du cluster 
+### 2.7 Formatage de HDFS et démarrage du cluster 
 
 **commande**
 
@@ -235,7 +243,7 @@ e) yarn-site.xml — gestionnaire de ressources
 <img width="828" height="261" alt="image" src="https://github.com/user-attachments/assets/af272421-82d4-4851-9fc3-d7762c20d5b6" />
 
 
-## 2.8 Interfaces web 
+### 2.8 Interfaces web 
 
 **sortie**
 
@@ -259,7 +267,7 @@ e) yarn-site.xml — gestionnaire de ressources
 
 # Partie 3 — Manipulation de HDFS 
 
-## Exercice 1 — Premiers pas avec HDFS 
+### Exercice 1 — Premiers pas avec HDFS 
 
 **commande**
 
@@ -290,7 +298,7 @@ e) yarn-site.xml — gestionnaire de ressources
 <img width="611" height="331" alt="image" src="https://github.com/user-attachments/assets/487f424f-9388-4082-a03d-a8f49584c2a1" />
 
 
-## Question 
+### Question 
 **Réponses aux questions pour votre compte rendu**
 
 
@@ -309,9 +317,9 @@ e) yarn-site.xml — gestionnaire de ressources
 (1024MO/128MO) =8bloc
 • Espace disque utilisé : Votre résultat (1G0*3 = 3 GO  et 24 blocs physiques au total) 
  
-# Partie 5 — Pratique : MapReduce en Python 
+## Partie 5 — Pratique : MapReduce en Python 
 
-## 5.2 Exercice 2 — WordCount en Python 
+### 5.2 Exercice 2 — WordCount en Python 
 
 **Etape1:creation de fichier mapper.py**
 
@@ -443,7 +451,7 @@ e) yarn-site.xml — gestionnaire de ressources
 '''
 
 
-## Exercice 3 — Chiffre d'affaires par ville
+### Exercice 3 — Chiffre d'affaires par ville
 
 **Creation du fichier CSV**
 
@@ -578,7 +586,7 @@ e) yarn-site.xml — gestionnaire de ressources
 '''
 
 
-## Exercice 4 — Température maximale par année 
+### Exercice 4 — Température maximale par année 
 
 
 **Etape 1 : Creation du fichier de données ~/tp/meteo.txt**
@@ -859,11 +867,11 @@ Comme Hadoop trie les paires par année, le reducer compare les températures d'
 
 '''
 
-## Exercice 6 — Index inversé 
+### Exercice 6 — Index inversé 
 
 **Création de  plusieurs fichiers texte d'essai**
 
-''' TErminal
+''' Terminal
 
         mkdir -p ~/tp/docs_index
         echo "hadoop et spark sont des outils big data" > ~/tp/docs_index/doc1.txt
@@ -968,7 +976,7 @@ Comme Hadoop trie les paires par année, le reducer compare les températures d'
 
 '''
 
-## 5.5 Plusieurs reducers 
+### 5.5 Plusieurs reducers 
 
 
 ''' Terminal
